@@ -1,81 +1,70 @@
-$ = ((e, t) => {
-    let n = "number" == typeof t ? t : void 0,
-        a = "object" == typeof t ? t : void 0,
-        o = a ? a.querySelectorAll(e) : document.querySelectorAll(e);
-    return void 0 !== n ? o[n] : 1 === o.length ? o[0] : o
-}), HTMLElement.prototype.find = function (e) {
-    return $(e, this)
-}, HTMLElement.prototype.hasClass = function (e) {
-    return this.classList ? this.classList.contains(e) : new RegExp("(^| )" + e + "( |$)", "gi").test(this.q)
-}, HTMLElement.prototype.addClass = function (e) {
-    return this.classList ? this.classList.add(e) : this.className += " " + e
-}, HTMLElement.prototype.removeClass = function (e) {
-    return this.classList ? this.classList.remove(e) : this.className = this.className.replace(new RegExp("(^|\\b)" + e.split(" ").join("|") + "(\\b|$)", "gi"), " ")
-}, HTMLElement.prototype.toggleClass = function (e) {
-    return this.hasClass(e) ? this.removeClass(e) : this.addClass(e)
-}, HTMLElement.prototype.attr = function (e, t) {
-    return void 0 !== t ? this.setAttribute(e, t) : this.getAttribute(e)
-}, HTMLElement.prototype.data = function (e, t) {
-    return this.attr("data-" + e, t)
-}, HTMLElement.prototype.html = function (e) {
-    return this.innerHTML = e
-}, HTMLElement.prototype.forEach = function (e, t) {
-    return [this].forEach(e, t)
-}, HTMLElement.prototype.append = function (e) {
-    return this.appendChild(e)
-};
+$ = (q, e) => {
+    let i = typeof e === "number" ? e : undefined;
+    let o = typeof e === "object" ? e : undefined;
+    let r = o ? o.querySelectorAll(q) : document.querySelectorAll(q);
+    if(i!==undefined){
+        return r[i];
+    }else if(r.length===1){
+        return r[0];
+    }else{
+        return r;
+    }
+}
+HTMLElement.prototype.find = function(q){return $(q, this)};
+HTMLElement.prototype.hasClass = function(q){return this.classList ? this.classList.contains(q) : new RegExp('(^| )' + q + '( |$)', 'gi').test(this.q); }
+HTMLElement.prototype.addClass = function(q){return this.classList ? this.classList.add(q) : this.className += ' ' + q;}
+HTMLElement.prototype.removeClass = function(q){return this.classList ? this.classList.remove(q) : this.className = this.className.replace(new RegExp('(^|\\b)' + q.split(' ').join('|') + '(\\b|$)', 'gi'), ' '); }
+HTMLElement.prototype.toggleClass =  function(q){return this.hasClass(q) ? this.removeClass(q) : this.addClass(q); }
+HTMLElement.prototype.attr = function(q,s){return s!==undefined ? this.setAttribute(q, s) : this.getAttribute(q); }
+HTMLElement.prototype.data = function(q,s){return this.attr("data-"+q,s); }
+HTMLElement.prototype.html = function(q){return this.innerHTML=q; }
+HTMLElement.prototype.forEach = function(q,s){return [this].forEach(q,s); }
+HTMLElement.prototype.append = function(q){return this.appendChild(q); }
 
-let puzzle = "";
-let imageParts = [];
-let boxSize = 640;
-let boxSlice = 4;
-let threshold = 0;
-let selected = -1;
-let imgObject = new Image();
-let gameStart = false;
-let gameOver = false;
-let waitLoad;
-let body = $('.grid');
-let oldCorrect = 0;
-let points = 0;
-let canvas = document.createElement('canvas');
-let context = canvas.getContext('2d');
+let boxSize = 640,
+    boxSlice = 4,
+    threshold = 0,
+    boxLength = boxSlice*boxSlice,
+    puzzle,
+    imageParts,
+    selected,
+    imgObject,
+    gameStart,
+    gameOver,
+    waitLoad,
+    oldCorrect,
+    points;
 
 function toImageData (image) {
-  canvas.width = image.width;
-  canvas.height = image.height;
-  context.clearRect(0, 0, image.width, image.height);
-  context.drawImage(image, 0, 0);
-  return context.getImageData(0, 0, image.width, image.height);
+    let canvas = document.createElement('canvas'),
+        context = canvas.getContext('2d');
+    [canvas.width, canvas.height] = [image.width, image.height];
+    context.clearRect(0, 0, image.width, image.height);
+    context.drawImage(image, 0, 0);
+    return context.getImageData(0, 0, image.width, image.height);
 }
 
 function equal(a, b, tolerance) {
-  a = toImageData(a);
-  b = toImageData(b);
-  tolerance = tolerance || 0;
-  for (var i = a.data.length; i--;) if (a.data[i] !== b.data[i] && Math.abs(a.data[i] - b.data[i]) > tolerance) return false;
-  return true;
+    [a, b] = [toImageData(a), toImageData(b)];
+    tolerance = tolerance || 0;
+    for (var i = a.data.length; i--;) if (a.data[i] !== b.data[i] && Math.abs(a.data[i] - b.data[i]) > tolerance) return false;
+    return true;
 }
 
 // RESETS GLOBAL VARIABLES TO THEIR INITIAL STATE & PREPARES BOXES
 function resetGame(){
-    body.innerHTML = "";
-    puzzle = "";
-    imageParts = [];
-    gameOver = false;
-    selected = -1;
+    $('.grid').innerHTML = "";
+    [puzzle, imageParts, gameStart, gameOver, selected, oldCorrect, points] = ["", [], false, false, -1, 0, 0];
     imgObject = new Image();
-    gameStart = false;
-    points = 0;
     $(".button.light").removeClass("disabled");
 
-    for(let i=0; i<boxSlice*boxSlice; i++){
+    for(let i=0; i<boxLength; i++){
         let newBox = document.createElement('img');
         newBox.className = 'box';
         newBox.style.width = boxSize/boxSlice;
         newBox.style.height = boxSize/boxSlice;
         newBox.draggable = false;
-        body.appendChild(newBox);
+        $('.grid').appendChild(newBox);
     }
 
     $(".box").forEach(function(e, i) {
@@ -84,13 +73,10 @@ function resetGame(){
         e.addEventListener("click", function(){
             if(!gameOver){
                 if(selected===-1){
-                    // SELECT
                     this.addClass("selected");
                     selected = this;
                 }else{
-                    // SWAP
                     swapBoxes([selected,this]);
-                    // CONTROL
                     boxControl();
                 }
             }
@@ -101,31 +87,31 @@ function resetGame(){
 }
 
 // https://stackoverflow.com/questions/19262141/resize-image-with-javascript-canvas-smoothly
-function resizePuzzle(){
+// https://yellowpencil.com/blog/cropping-images-with-javascript/
+function getImagePortion(imgObj, newWidth, newHeight, startX, startY, scaleX, scaleY){
     let canvas = document.createElement('canvas'),
-        ctx = canvas.getContext("2d");
+        ctx = canvas.getContext('2d'),
         oc = document.createElement('canvas'),
         octx = oc.getContext('2d');
 
-    canvas.height = canvas.width = boxSize;
+    // DRAW ORIGINAL IMAGE TO BUFFER
+    [oc.width, oc.height] = [imgObj.width, imgObj.height];
+    octx.drawImage(imgObj, 0, 0, oc.width, oc.height);
 
-    // DRAW IMAGE TO CANVAS
-    oc.width = imgObject.width;
-    oc.height = imgObject.height;
-    octx.drawImage(imgObject, 0, 0, oc.width, oc.height);
+    if(newWidth==="oc"){ newWidth = oc.width; }
+    if(newHeight==="oc"){ newHeight = oc.height; }
+    if(!scaleX){scaleX = newWidth}
+    if(!scaleY){scaleY = newHeight}
+
+    [canvas.width, canvas.height] = [scaleX, scaleY];
 
     // FOR A CRISP IMAGE
     ctx.mozImageSmoothingEnabled = false;
     ctx.webkitImageSmoothingEnabled = false;
     ctx.imageSmoothingEnabled = false;
 
-    // SCALE & DRAW
-    ctx.drawImage(oc, 0, 0, oc.width, oc.height, 0, 0, boxSize, boxSize);
-
-    puzzle = canvas.toDataURL();
-    imgObject = new Image();
-    imgObject.src = puzzle;
-    imgObject.onLoad = onImgLoaded(true);
+    ctx.drawImage(oc,startX,startY,newWidth,newHeight,0,0,scaleX,scaleY);
+    return canvas.toDataURL();
 }
 
 // TRIGGERED WHEN IMAGE IS FULLY LOADED
@@ -137,7 +123,10 @@ function onImgLoaded(resized) {
         }, 3);
     } else {
         if (!resized) {
-            resizePuzzle();
+            puzzle = getImagePortion(imgObject, "oc", "oc", 0, 0, boxSize, boxSize);
+            imgObject = new Image();
+            imgObject.src = puzzle;
+            imgObject.onLoad = onImgLoaded(true);
         } else {
             fillImages();
             shuffle();
@@ -159,32 +148,11 @@ function readFile(e) {
     }
 }
 
-// https://yellowpencil.com/blog/cropping-images-with-javascript/
-function getImagePortion(imgObj, newWidth, newHeight, startX, startY){
-    let canvas = document.createElement('canvas'),
-        ctx = canvas.getContext('2d'),
-        bufferCanvas = document.createElement('canvas'),
-        bufferContext = bufferCanvas.getContext('2d');
 
-    canvas.width = canvas.height = newHeight;
-    
-    // DRAW ORIGINAL IMAGE TO BUFFER
-    bufferCanvas.width = imgObj.width;
-    bufferCanvas.height = imgObj.height;
-    bufferContext.drawImage(imgObj, 0, 0);
-
-    // FOR A CRISP IMAGE
-    ctx.mozImageSmoothingEnabled = false;
-    ctx.webkitImageSmoothingEnabled = false;
-    ctx.imageSmoothingEnabled = false;
-
-    ctx.drawImage(bufferCanvas, startX,startY,newWidth, newHeight,0,0,newWidth,newHeight);
-    return canvas.toDataURL();
-}
 
 // SLICE IMAGE PARTS AND FILL BOXES WITH THEM
 function fillImages(){
-    $(".box").forEach(function(e, i) {
+    $(".box").forEach(function(el, i) {
         let portion = getImagePortion(
             imgObject,                              // imgObj
             boxSize/boxSlice,                       // newWidth
@@ -192,21 +160,20 @@ function fillImages(){
             (i%boxSlice)*boxSize/boxSlice,          // startX
             Math.floor(i/boxSlice)*boxSize/boxSlice // startY
         );
-        e.src = portion;
-        imageParts.push(e);
+        el.src = portion;
+        imageParts.push(el);
     });
     gameStart = true;
 }
 
-function getPoints(correctness){
-    //console.log(correctness, "correct!");
+function changePoints(correctness){
     let balance = 0;
-    if(correctness===0){
-        //console.log(":(");
+    if(correctness === 0){
         balance = -4;
-    }else if(correctness<0){
+    }else if(correctness < 0){
         balance = ~~(correctness * 30);
-    }else{
+    }else if(correctness > 0){
+        $(".button.light").addClass("disabled")
         balance = ~~(correctness * 6.25);
     }
     points += balance
@@ -229,33 +196,18 @@ function boxControl(){
         },100)
     }else{
         let correctBoxCount = 0;
+
         $(".box").forEach(function(el, i) {
             let eqArray = [];
-            for(let j = 0; j < boxSlice*boxSlice; j++){
-                // IF ITS EQUAL
-                let isEqual = equal(el, imageParts[j], threshold);
-                eqArray.push(isEqual);
-                //console.log("eq", isEqual)
-            }
-
-            if(eqArray[i]){
-                correctBoxCount++;
-                imageParts[i].addClass("correct");
-            }else{
-                imageParts[i].removeClass("correct");
-            }
-            //console.log("\n\n")
+            for(let j = 0; j < boxLength; j++) eqArray.push(equal(el, imageParts[j], threshold));
+            if(eqArray[i]) correctBoxCount++;
+            eqArray[i] ? imageParts[i].addClass("correct") : imageParts[i].removeClass("correct")
         });
-        //console.log(correctBoxCount, "/", boxSlice*boxSlice)
 
-        if(correctBoxCount-oldCorrect>0){
-            $(".button.light").addClass("disabled");
-        }
-
-        getPoints(correctBoxCount-oldCorrect);
+        changePoints(correctBoxCount-oldCorrect);
         oldCorrect = correctBoxCount;
 
-        if(correctBoxCount===boxSlice*boxSlice){
+        if(correctBoxCount===boxLength){
             gameOver = true;
             gameStart = false;
             setTimeout(function(){
@@ -266,19 +218,12 @@ function boxControl(){
 }
 
 function swapBoxes(boxes){
-    let tempLoc = [boxes[1].style.top, boxes[1].style.left];
-    boxes[1].style.top = boxes[0].style.top;
-    boxes[1].style.left = boxes[0].style.left;
-    boxes[0].style.top = tempLoc[0];
-    boxes[0].style.left = tempLoc[1];
+    [boxes[1].style.top, boxes[1].style.left, boxes[0].style.top, boxes[0].style.left] 
+        = [boxes[0].style.top, boxes[0].style.left, boxes[1].style.top, boxes[1].style.left];
     boxes[0].removeClass("selected");
-    let k = imageParts.findIndex(e=>{return e===boxes[0];})
-    let l = imageParts.findIndex(e=>{return e===boxes[1];})
-    let tempResPar = imageParts[k]
-    imageParts[k] = imageParts[l];
-    imageParts[l] = tempResPar;
-
-    // RESET
+    let [a,b] = [imageParts.findIndex(e=>{return e===boxes[0];}), imageParts.findIndex(e=>{return e===boxes[1];})];
+    [imageParts[a], imageParts[b]] = [imageParts[b],imageParts[a]]
+    // UNSELECT PIECE
     selected = -1;
 }
 
@@ -288,7 +233,7 @@ function shuffle() {
         if(points===0){
             points = 0;
             oldCorrect = 0;
-            for (let i = (boxSlice*boxSlice)-1; i > 0; i--) {
+            for (let i = (boxLength)-1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 swapBoxes([$(".box", i), $(".box", j)]);
             }
@@ -299,16 +244,12 @@ function shuffle() {
 }
 
 function getTop5(){
-    //console.log("getting top 5");
     var http = new XMLHttpRequest();
     http.open('GET', '/getScores', true);
     http.onreadystatechange = function() {
         if(http.readyState == 4 && http.status == 200) {
             let parsed = JSON.parse(http.responseText);
-            parsed.scores.sort(function(a, b) {
-                return b.score - a.score;
-            })
-            //console.log(parsed);
+            parsed.scores.sort((a, b) => b.score - a.score)
             $("#scores").innerHTML = "";
             for(let i=0; i < (parsed.scores.length > 5 ? 5 : parsed.scores.length); i++){
                 let newScore = document.createElement('div');
@@ -323,20 +264,15 @@ function getTop5(){
 
 function saveScore(){
     let name = prompt("Please enter your name");
-    if (name !== null) {
-        name = encodeURI(name);
-        //console.log(name);
-        // POST TO BACKEND
-        var http = new XMLHttpRequest();
-        http.open('POST', '/postScore/'+name+'/'+points, true);
-        http.onreadystatechange = function() {
-            if(http.readyState == 4 && http.status == 200) {
-                getTop5();
-            }
+    name = name ? encodeURI(name) : "Anonymous";
+    var http = new XMLHttpRequest();
+    http.open('POST', '/postScore/'+name+'/'+points, true);
+    http.onreadystatechange = function() {
+        if(http.readyState == 4 && http.status == 200) {
+            getTop5();
         }
-        http.send();
     }
-    //console.log("game over")
+    http.send();
 }
 
 resetGame();
