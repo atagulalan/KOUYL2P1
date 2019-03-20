@@ -108,7 +108,8 @@ function onImgLoaded(resized) {
     if (waitLoad != null) clearTimeout(waitLoad);
     if (!imgObject.complete) {
         waitLoad = setTimeout(function () {
-            onImgLoaded();
+            console.log("bekleniyor", resized)
+            onImgLoaded(resized);
         }, 3);
     } else {
         if (!resized) {
@@ -136,8 +137,6 @@ function readFile(e) {
         fileReader.readAsDataURL(e.files[0]);
     }
 }
-
-
 
 // SLICE IMAGE PARTS AND FILL BOXES WITH THEM
 function fillImages() {
@@ -182,7 +181,7 @@ function boxControl() {
     if (!isLoaded) {
         setTimeout(function () {
             boxControl();
-        }, 100)
+        }, 1)
     } else {
         let correctBoxCount = 0;
 
@@ -201,7 +200,7 @@ function boxControl() {
             gameStart = false;
             setTimeout(function () {
                 saveScore();
-            }, 400)
+            }, 500)
         }
     }
 }
@@ -210,6 +209,8 @@ function swapBoxes(boxes) {
     [boxes[1].style.top, boxes[1].style.left, boxes[0].style.top, boxes[0].style.left] 
         = [boxes[0].style.top, boxes[0].style.left, boxes[1].style.top, boxes[1].style.left];
     boxes[0].removeClass("selected");
+    $(".box").forEach(el => el.removeClass("lastSelected"));
+    boxes[0].addClass("lastSelected");
     let [a, b] = [imageParts.findIndex(e => {
         return e === boxes[0];
     }), imageParts.findIndex(e => {

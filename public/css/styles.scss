@@ -37,6 +37,7 @@ html{
                 overflow:hidden;
                 &.disabled{
                     background:gray !important;
+                    pointer-events: none;
                     &:hover{
                         transform: scale(1);
                         box-shadow: 0 3px 44px -5px rgba(0, 0, 0, 0);
@@ -71,7 +72,6 @@ html{
                 }
             }
             .top10{
-                border-radius:3px;
                 h1{
                     width:100%;
                     text-align:center;
@@ -130,8 +130,11 @@ html{
                     }
                     &.selected{
                         transform: scale(1.1);
-                        z-index:2;
+                        z-index:3;
                         box-shadow: 0 3px 44px -5px rgba(0, 0, 0, 0.3);
+                    }
+                    &.lastSelected{
+                        z-index:2;
                     }
                 }
             }

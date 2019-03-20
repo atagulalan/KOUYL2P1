@@ -42,6 +42,7 @@ html body .right .button {
 
 html body .right .button.disabled {
   background: gray !important;
+  pointer-events: none;
 }
 
 html body .right .button.disabled:hover {
@@ -79,10 +80,6 @@ html body .right .points {
 
 html body .right .points b {
   padding: 0 5px;
-}
-
-html body .right .top10 {
-  border-radius: 3px;
 }
 
 html body .right .top10 h1 {
@@ -152,8 +149,12 @@ html body .puzzle .grid .box.correct {
 
 html body .puzzle .grid .box.selected {
   transform: scale(1.1);
-  z-index: 2;
+  z-index: 3;
   box-shadow: 0 3px 44px -5px rgba(0, 0, 0, 0.3);
+}
+
+html body .puzzle .grid .box.lastSelected {
+  z-index: 2;
 }
 
 .noselect {
