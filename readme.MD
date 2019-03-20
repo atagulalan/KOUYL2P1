@@ -26,7 +26,9 @@ npm start
 
 yapmak.
 
-Varsayılan olarak, 5555 bağlantı noktasında çalışır. Bunu `index.js` dosyasından değiştirebilirsiniz.
+Varsayılan olarak, 4540 merkez bağlantı noktasında çalışır. Bunu `index.js` dosyasından değiştirebilirsiniz.
+
+`localhost:4540` adresinden uygulamaya ulaşabilirsiniz.
 
 İyi eğlenceler!
 

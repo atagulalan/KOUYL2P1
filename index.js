@@ -1,3 +1,6 @@
+// 160202034 - Ata Gülalan
+// 160202015 - Oğuzhan Türker
+
 var express = require('express')
 var app = express()
 var fs = require('fs')
@@ -29,4 +32,4 @@ app.get('/getScores', function (req, res) {
 })
 
 app.use('/', express.static('public'))
-app.listen(5555)
+app.listen(4540)
