@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="css/styles.css">
+    <title>Puzzle</title>
+</head>
+<body>
+    <div class="wrapper noselect">
+        <div class="puzzle">
+            <div class="grid">
+            </div>
+        </div>
+        <div class="right">
+            <div class="points">
+                <span id="points">100</span><b>/</b>100
+            </div>
+            <label class="button">
+                Select an Image
+                <input type="file" onChange="readFile(this)"/>
+            </label>
+            <div class="button light" onClick="shuffle()">
+                Shuffle!
+            </div>
+            <div class="top10">
+                <h1>Best Scores</h1>
+                <span id="scores"></span>
+            </div>
+        </div>
+    </div>
+    <script src="js/main.js"></script>
+</body>
+</html>

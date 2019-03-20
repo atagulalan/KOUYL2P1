@@ -1,0 +1,151 @@
+@import url('https://fonts.googleapis.com/css?family=Exo+2:300,400,500,600,700,800,900&subset=latin-ext');
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family: 'Exo 2', sans-serif;
+}
+
+html{
+    background:#2F2F2F;
+    body{
+        .wrapper{
+            width:1000px;
+            height:640px;
+            margin:calc(50vh - 320px) auto;
+        }
+        .right{
+            width:340px;
+            height:100%;
+            float:right;
+            .button{
+                height:75px;
+                line-height:75px;
+                background:#DC7F9B;
+                color:white;
+                font-weight:700;
+                font-size:20pt;
+                text-align:center;
+                margin-bottom:15px;
+                border-radius:50px;
+                box-shadow: 0 3px 22px -5px rgba(0, 0, 0, 0.3);
+                transition:0.3s box-shadow, 0.3s transform;
+                cursor:pointer;
+                display:block;
+                position:relative;
+                overflow:hidden;
+                &.disabled{
+                    background:gray !important;
+                    &:hover{
+                        transform: scale(1);
+                        box-shadow: 0 3px 44px -5px rgba(0, 0, 0, 0);
+                    }
+                }
+                &:hover{
+                    transform: scale(1.01);
+                    box-shadow: 0 3px 44px -5px rgba(0, 0, 0, 0.3);
+                }
+                &.light{
+                    background:#94BFA7;
+                }
+                input{
+                    opacity:0;
+                    cursor:pointer;
+                    position: absolute;
+                    left:-9999px;
+                    top:-9999px;
+                }
+            }
+            .points{
+                color: white;
+                font-size: 40pt;
+                font-weight: 600;
+                text-align: center;
+                border-bottom: 4px solid #dc7f9b;
+                width: 240px;
+                margin: 30px auto 20px;
+                padding-bottom:5px;
+                b{
+                    padding:0 5px;
+                }
+            }
+            .top10{
+                border-radius:3px;
+                h1{
+                    width:100%;
+                    text-align:center;
+                    padding: 10px;
+                    color:#F2E9DC;
+                    border-top:none;
+                    border-bottom:none;
+                }
+                #scores{
+                    .score{
+                        &:nth-child(1){
+                            background:#FFB3BA;
+                        }
+                        &:nth-child(2){
+                            background:#FFDFBA;
+                        }
+                        &:nth-child(3){
+                            background:#FFFFBA;
+                        }
+                        &:nth-child(4){
+                            background:#BAFFC9;
+                        }
+                        &:nth-child(5){
+                            background:#BAE1FF;
+                        }
+                        border-radius: 20px;
+                        line-height: 40px;
+                        padding: 0 25px;
+                        font-size: 14pt;
+                        color: #2f2f2f;
+                        margin-bottom:6px;
+                        text-align:center;
+                    }
+                }
+            }
+        }
+        .puzzle{
+            width:640px;
+            height:640px;
+            background:transparent;
+            border-radius:3px;
+            float:left;
+            box-shadow: 0 3px 44px -5px rgba(0, 0, 0, 0.3);
+            background:#111;
+            .grid{
+                position:relative;
+                .box{
+                    position:absolute;
+                    float:left;
+                    cursor:pointer;
+                    background:white;
+                    transition:0.3s transform, 0.3s left, 0.3s top;
+                    &.correct{
+                        z-index:1;
+                        box-shadow: 0 0 0 5px cyan;
+                    }
+                    &.selected{
+                        transform: scale(1.1);
+                        z-index:2;
+                        box-shadow: 0 3px 44px -5px rgba(0, 0, 0, 0.3);
+                    }
+                }
+            }
+        }
+    }
+}
+
+//https://stackoverflow.com/questions/826782/how-to-disable-text-selection-highlighting
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+}
