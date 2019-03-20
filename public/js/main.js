@@ -24,7 +24,8 @@ HTMLElement.prototype.append = function(q){return this.appendChild(q); }
 let boxSize = 640,
     boxSlice = 4,
     threshold = 0,
-    boxLength = boxSlice*boxSlice,
+    boxLength = boxSlice * boxSlice,
+    pieceSize = boxSize / boxSlice,
     puzzle,
     imageParts,
     selected,
@@ -35,7 +36,7 @@ let boxSize = 640,
     oldCorrect,
     points;
 
-function toImageData (image) {
+function toImageData(image) {
     let canvas = document.createElement('canvas'),
         context = canvas.getContext('2d');
     [canvas.width, canvas.height] = [image.width, image.height];
@@ -47,36 +48,33 @@ function toImageData (image) {
 function equal(a, b, tolerance) {
     [a, b] = [toImageData(a), toImageData(b)];
     tolerance = tolerance || 0;
-    for (var i = a.data.length; i--;) if (a.data[i] !== b.data[i] && Math.abs(a.data[i] - b.data[i]) > tolerance) return false;
+    for (var i = a.data.length; i--;)
+        if (a.data[i] !== b.data[i] && Math.abs(a.data[i] - b.data[i]) > tolerance) return false;
     return true;
 }
 
 // RESETS GLOBAL VARIABLES TO THEIR INITIAL STATE & PREPARES BOXES
-function resetGame(){
+function resetGame() {
     $('.grid').innerHTML = "";
     [puzzle, imageParts, gameStart, gameOver, selected, oldCorrect, points] = ["", [], false, false, -1, 0, 0];
     imgObject = new Image();
     $(".button.light").removeClass("disabled");
 
-    for(let i=0; i<boxLength; i++){
+    for (let i = 0; i < boxLength; i++) {
         let newBox = document.createElement('img');
-        newBox.className = 'box';
-        newBox.style.width = boxSize/boxSlice;
-        newBox.style.height = boxSize/boxSlice;
-        newBox.draggable = false;
+        [newBox.className, newBox.style.width, newBox.style.height, newBox.draggable] = ['box', pieceSize, pieceSize, false]
         $('.grid').appendChild(newBox);
     }
 
-    $(".box").forEach(function(e, i) {
-        e.style.top = (Math.floor(i/boxSlice) * (boxSize/boxSlice)) + 'px';
-        e.style.left = (i%boxSlice * (boxSize/boxSlice)) + 'px';
-        e.addEventListener("click", function(){
-            if(!gameOver){
-                if(selected===-1){
+    $(".box").forEach(function (e, i) {
+        [e.style.top, e.style.left] = [(Math.floor(i / boxSlice) * (pieceSize)) + 'px', (i % boxSlice * (pieceSize)) + 'px'];
+        e.addEventListener("click", function () {
+            if (!gameOver) {
+                if (selected === -1) {
                     this.addClass("selected");
                     selected = this;
-                }else{
-                    swapBoxes([selected,this]);
+                } else {
+                    swapBoxes([selected, this]);
                     boxControl();
                 }
             }
@@ -88,7 +86,7 @@ function resetGame(){
 
 // https://stackoverflow.com/questions/19262141/resize-image-with-javascript-canvas-smoothly
 // https://yellowpencil.com/blog/cropping-images-with-javascript/
-function getImagePortion(imgObj, newWidth, newHeight, startX, startY, scaleX, scaleY){
+function getImagePortion(imgObj, newWidth, newHeight, startX, startY, scaleX, scaleY) {
     let canvas = document.createElement('canvas'),
         ctx = canvas.getContext('2d'),
         oc = document.createElement('canvas'),
@@ -98,19 +96,17 @@ function getImagePortion(imgObj, newWidth, newHeight, startX, startY, scaleX, sc
     [oc.width, oc.height] = [imgObj.width, imgObj.height];
     octx.drawImage(imgObj, 0, 0, oc.width, oc.height);
 
-    if(newWidth==="oc"){ newWidth = oc.width; }
-    if(newHeight==="oc"){ newHeight = oc.height; }
-    if(!scaleX){scaleX = newWidth}
-    if(!scaleY){scaleY = newHeight}
+    newWidth = newWidth === "oc" ? oc.width : newWidth;
+    newHeight = newHeight === "oc" ? oc.height : newHeight;
+    scaleX = scaleX ? scaleX : newWidth;
+    scaleY = scaleY ? scaleY : newHeight;
 
     [canvas.width, canvas.height] = [scaleX, scaleY];
 
     // FOR A CRISP IMAGE
-    ctx.mozImageSmoothingEnabled = false;
-    ctx.webkitImageSmoothingEnabled = false;
     ctx.imageSmoothingEnabled = false;
 
-    ctx.drawImage(oc,startX,startY,newWidth,newHeight,0,0,scaleX,scaleY);
+    ctx.drawImage(oc, startX, startY, newWidth, newHeight, 0, 0, scaleX, scaleY);
     return canvas.toDataURL();
 }
 
@@ -118,7 +114,7 @@ function getImagePortion(imgObj, newWidth, newHeight, startX, startY, scaleX, sc
 function onImgLoaded(resized) {
     if (waitLoad != null) clearTimeout(waitLoad);
     if (!imgObject.complete) {
-        waitLoad = setTimeout(function() {
+        waitLoad = setTimeout(function () {
             onImgLoaded();
         }, 3);
     } else {
@@ -138,27 +134,27 @@ function onImgLoaded(resized) {
 function readFile(e) {
     resetGame();
     if (e.files && e.files[0]) {
-        let fileReader= new FileReader();
-        fileReader.addEventListener("load", function(e) {
+        let fileReader = new FileReader();
+        fileReader.addEventListener("load", function (e) {
             puzzle = e.target.result;
             imgObject.src = puzzle;
             imgObject.onLoad = onImgLoaded();
-        }); 
-        fileReader.readAsDataURL( e.files[0] );
+        });
+        fileReader.readAsDataURL(e.files[0]);
     }
 }
 
 
 
 // SLICE IMAGE PARTS AND FILL BOXES WITH THEM
-function fillImages(){
-    $(".box").forEach(function(el, i) {
+function fillImages() {
+    $(".box").forEach(function (el, i) {
         let portion = getImagePortion(
-            imgObject,                              // imgObj
-            boxSize/boxSlice,                       // newWidth
-            boxSize/boxSlice,                       // newHeight
-            (i%boxSlice)*boxSize/boxSlice,          // startX
-            Math.floor(i/boxSlice)*boxSize/boxSlice // startY
+            imgObject, // imgObj
+            pieceSize, // newWidth
+            pieceSize, // newHeight
+            (i % boxSlice) * pieceSize, // startX
+            Math.floor(i / boxSlice) * pieceSize // startY
         );
         el.src = portion;
         imageParts.push(el);
@@ -166,13 +162,13 @@ function fillImages(){
     gameStart = true;
 }
 
-function changePoints(correctness){
+function changePoints(correctness) {
     let balance = 0;
-    if(correctness === 0){
+    if (correctness === 0) {
         balance = -4;
-    }else if(correctness < 0){
+    } else if (correctness < 0) {
         balance = ~~(correctness * 30);
-    }else if(correctness > 0){
+    } else if (correctness > 0) {
         $(".button.light").addClass("disabled")
         balance = ~~(correctness * 6.25);
     }
@@ -181,59 +177,63 @@ function changePoints(correctness){
     $("#points").innerHTML = points;
 }
 
-function boxControl(){
+function boxControl() {
     // WAIT IMAGE RENDER TO BE READY
     let isLoaded = true;
-    for(let i = 0; i<imageParts.length; i++){
-        if(imageParts[i].width===0){
+    for (let i = 0; i < imageParts.length; i++) {
+        if (imageParts[i].width === 0) {
             isLoaded = false;
             break;
         }
     }
-    if(!isLoaded){ 
-        setTimeout(function(){
+    if (!isLoaded) {
+        setTimeout(function () {
             boxControl();
-        },100)
-    }else{
+        }, 100)
+    } else {
         let correctBoxCount = 0;
 
-        $(".box").forEach(function(el, i) {
+        $(".box").forEach(function (el, i) {
             let eqArray = [];
-            for(let j = 0; j < boxLength; j++) eqArray.push(equal(el, imageParts[j], threshold));
-            if(eqArray[i]) correctBoxCount++;
+            for (let j = 0; j < boxLength; j++) eqArray.push(equal(el, imageParts[j], threshold));
+            if (eqArray[i]) correctBoxCount++;
             eqArray[i] ? imageParts[i].addClass("correct") : imageParts[i].removeClass("correct")
         });
 
-        changePoints(correctBoxCount-oldCorrect);
+        changePoints(correctBoxCount - oldCorrect);
         oldCorrect = correctBoxCount;
 
-        if(correctBoxCount===boxLength){
+        if (correctBoxCount === boxLength) {
             gameOver = true;
             gameStart = false;
-            setTimeout(function(){
+            setTimeout(function () {
                 saveScore();
-            },400)
+            }, 400)
         }
     }
 }
 
-function swapBoxes(boxes){
+function swapBoxes(boxes) {
     [boxes[1].style.top, boxes[1].style.left, boxes[0].style.top, boxes[0].style.left] 
         = [boxes[0].style.top, boxes[0].style.left, boxes[1].style.top, boxes[1].style.left];
     boxes[0].removeClass("selected");
-    let [a,b] = [imageParts.findIndex(e=>{return e===boxes[0];}), imageParts.findIndex(e=>{return e===boxes[1];})];
-    [imageParts[a], imageParts[b]] = [imageParts[b],imageParts[a]]
+    let [a, b] = [imageParts.findIndex(e => {
+        return e === boxes[0];
+    }), imageParts.findIndex(e => {
+        return e === boxes[1];
+    })];
+    [imageParts[a], imageParts[b]] = [imageParts[b], imageParts[a]]
     // UNSELECT PIECE
     selected = -1;
 }
 
 //https://stackoverflow.com/questions/6274339/how-can-i-shuffle-an-array
 function shuffle() {
-    if(gameStart){
-        if(points===0){
+    if (gameStart) {
+        if (points === 0) {
             points = 0;
             oldCorrect = 0;
-            for (let i = (boxLength)-1; i > 0; i--) {
+            for (let i = (boxLength) - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 swapBoxes([$(".box", i), $(".box", j)]);
             }
@@ -243,18 +243,18 @@ function shuffle() {
     }
 }
 
-function getTop5(){
+function getTop5() {
     var http = new XMLHttpRequest();
     http.open('GET', '/getScores', true);
-    http.onreadystatechange = function() {
-        if(http.readyState == 4 && http.status == 200) {
+    http.onreadystatechange = function () {
+        if (http.readyState == 4 && http.status == 200) {
             let parsed = JSON.parse(http.responseText);
             parsed.scores.sort((a, b) => b.score - a.score)
             $("#scores").innerHTML = "";
-            for(let i=0; i < (parsed.scores.length > 5 ? 5 : parsed.scores.length); i++){
+            for (let i = 0; i < (parsed.scores.length > 5 ? 5 : parsed.scores.length); i++) {
                 let newScore = document.createElement('div');
                 newScore.className = 'score';
-                newScore.innerHTML = parsed.scores[i].name+" <b>"+parsed.scores[i].score+"</b>"
+                newScore.innerHTML = parsed.scores[i].name + " <b>" + parsed.scores[i].score + "</b>"
                 $("#scores").appendChild(newScore);
             }
         }
@@ -262,13 +262,13 @@ function getTop5(){
     http.send();
 }
 
-function saveScore(){
+function saveScore() {
     let name = prompt("Please enter your name");
     name = name ? encodeURI(name) : "Anonymous";
     var http = new XMLHttpRequest();
-    http.open('POST', '/postScore/'+name+'/'+points, true);
-    http.onreadystatechange = function() {
-        if(http.readyState == 4 && http.status == 200) {
+    http.open('POST', '/postScore/' + name + '/' + points, true);
+    http.onreadystatechange = function () {
+        if (http.readyState == 4 && http.status == 200) {
             getTop5();
         }
     }

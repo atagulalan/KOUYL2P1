@@ -1,1 +1,1 @@
-{"scores":[]}
+{"scores":[{"name":"Anonymous","score":"100"},{"name":"Anonymous","score":"100"},{"name":"Anonymous","score":"100"}]}
