@@ -10,16 +10,9 @@ $ = (q, e) => {
         return r;
     }
 }
-HTMLElement.prototype.find = function(q){return $(q, this)};
-HTMLElement.prototype.hasClass = function(q){return this.classList ? this.classList.contains(q) : new RegExp('(^| )' + q + '( |$)', 'gi').test(this.q); }
 HTMLElement.prototype.addClass = function(q){return this.classList ? this.classList.add(q) : this.className += ' ' + q;}
 HTMLElement.prototype.removeClass = function(q){return this.classList ? this.classList.remove(q) : this.className = this.className.replace(new RegExp('(^|\\b)' + q.split(' ').join('|') + '(\\b|$)', 'gi'), ' '); }
-HTMLElement.prototype.toggleClass =  function(q){return this.hasClass(q) ? this.removeClass(q) : this.addClass(q); }
-HTMLElement.prototype.attr = function(q,s){return s!==undefined ? this.setAttribute(q, s) : this.getAttribute(q); }
-HTMLElement.prototype.data = function(q,s){return this.attr("data-"+q,s); }
-HTMLElement.prototype.html = function(q){return this.innerHTML=q; }
 HTMLElement.prototype.forEach = function(q,s){return [this].forEach(q,s); }
-HTMLElement.prototype.append = function(q){return this.appendChild(q); }
 
 let boxSize = 640,
     boxSlice = 4,
@@ -66,9 +59,9 @@ function resetGame() {
         $('.grid').appendChild(newBox);
     }
 
-    $(".box").forEach(function (e, i) {
-        [e.style.top, e.style.left] = [(Math.floor(i / boxSlice) * (pieceSize)) + 'px', (i % boxSlice * (pieceSize)) + 'px'];
-        e.addEventListener("click", function () {
+    $(".box").forEach(function (el, i) {
+        [el.style.top, el.style.left] = [(Math.floor(i / boxSlice) * (pieceSize)) + 'px', (i % boxSlice * (pieceSize)) + 'px'];
+        el.addEventListener("click", function () {
             if (!gameOver) {
                 if (selected === -1) {
                     this.addClass("selected");
