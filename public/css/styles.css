@@ -148,7 +148,6 @@ html body .puzzle .grid .box {
 
 html body .puzzle .grid .box.correct {
   z-index: 1;
-  box-shadow: 0 0 0 5px cyan;
 }
 
 html body .puzzle .grid .box.selected {
