@@ -102,23 +102,23 @@ html body .right .top10 #scores .score {
 }
 
 html body .right .top10 #scores .score:nth-child(1) {
-  background: #FFB3BA;
+  color: #FFB3BA;
 }
 
 html body .right .top10 #scores .score:nth-child(2) {
-  background: #FFDFBA;
+  color: #FFDFBA;
 }
 
 html body .right .top10 #scores .score:nth-child(3) {
-  background: #FFFFBA;
+  color: #FFFFBA;
 }
 
 html body .right .top10 #scores .score:nth-child(4) {
-  background: #BAFFC9;
+  color: #BAFFC9;
 }
 
 html body .right .top10 #scores .score:nth-child(5) {
-  background: #BAE1FF;
+  color: #BAE1FF;
 }
 
 html body .puzzle {

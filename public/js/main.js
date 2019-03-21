@@ -14,7 +14,8 @@ HTMLElement.prototype.addClass = function(q){return this.classList ? this.classL
 HTMLElement.prototype.removeClass = function(q){return this.classList ? this.classList.remove(q) : this.className = this.className.replace(new RegExp('(^|\\b)' + q.split(' ').join('|') + '(\\b|$)', 'gi'), ' '); }
 HTMLElement.prototype.forEach = function(q,s){return [this].forEach(q,s); }
 
-let boxSize = 640,
+let lockPosition = false,
+    boxSize = 640,
     boxSlice = 4,
     threshold = 0,
     boxLength = boxSlice * boxSlice,
@@ -63,12 +64,14 @@ function resetGame() {
         [el.style.top, el.style.left] = [(Math.floor(i / boxSlice) * (pieceSize)) + 'px', (i % boxSlice * (pieceSize)) + 'px'];
         el.addEventListener("click", function () {
             if (!gameOver) {
-                if (selected === -1) {
-                    this.addClass("selected");
-                    selected = this;
-                } else {
-                    swapBoxes([selected, this]);
-                    boxControl();
+                if((lockPosition && !(el.className.indexOf("correct") > -1)) || !lockPosition){
+                    if (selected === -1) {
+                        this.addClass("selected");
+                        selected = this;
+                    } else {
+                        swapBoxes([selected, this]);
+                        boxControl();
+                    }
                 }
             }
         });
@@ -108,7 +111,6 @@ function onImgLoaded(resized) {
     if (waitLoad != null) clearTimeout(waitLoad);
     if (!imgObject.complete) {
         waitLoad = setTimeout(function () {
-            console.log("bekleniyor", resized)
             onImgLoaded(resized);
         }, 3);
     } else {
