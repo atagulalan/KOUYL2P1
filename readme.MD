@@ -1,5 +1,5 @@
 # PuzzleJS
-<img src="https://github.com/atagulalan/KOUYL2P1/blob/master/public/favicon.ico" height="24" width="24"> Yazılım Laboratuvarı 2 - Proje 1
+Yazılım Laboratuvarı 2 - Proje 1
 
 ## Başlarken
 
@@ -45,3 +45,7 @@ Varsayılan olarak, 4540 merkez bağlantı noktasında çalışır. Bunu `index.
 ## Lisans
 
 * MIT
+
+
+
+![xava](https://github.com/atagulalan/KOUYL2P1/blob/master/public/favicon.ico)
