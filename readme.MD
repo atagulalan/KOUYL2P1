@@ -1,5 +1,5 @@
 # PuzzleJS
-🧩 Yazılım Laboratuvarı 2 - Proje 1
+<img src="https://github.com/atagulalan/KOUYL2P1/blob/master/public/favicon.ico" height="24" width="24"> Yazılım Laboratuvarı 2 - Proje 1
 
 ## Başlarken
 
