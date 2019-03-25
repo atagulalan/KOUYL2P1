@@ -46,4 +46,3 @@ Varsayılan olarak, 4540 merkez bağlantı noktasında çalışır. Bunu `index.
 
 * MIT
 
-![xava](https://github.com/atagulalan/KOUYL2P1/blob/master/public/favicon.ico "xava.me")
